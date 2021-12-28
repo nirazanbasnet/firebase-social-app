@@ -50,8 +50,6 @@ function Modal() {
 
 		setIsOpen(false);
 		setComment("");
-
-		router.push(`/${postId}`);
 	};
 
 	return (
@@ -67,7 +65,7 @@ function Modal() {
 						leaveFrom="opacity-100"
 						leaveTo="opacity-0"
 					>
-						<Dialog.Overlay className="fixed inset-0 bg-[#5b7083] bg-opacity-40 transition-opacity" />
+						<Dialog.Overlay className="fixed inset-0 transition-opacity bg-slate-800 bg-opacity-80" />
 					</Transition.Child>
 
 					<Transition.Child
@@ -79,61 +77,55 @@ function Modal() {
 						leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 						leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 					>
-						<div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-black shadow-xl rounded-2xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
-							<div className="flex items-center px-1.5 py-2 border-b border-gray-700">
+						<div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white shadow-xl rounded-2xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
+							<div className="flex items-center justify-end p-4 border-b border-slate-100">
 								<div
-									className="flex items-center justify-center hoverAnimation w-9 h-9 xl:px-0"
+									className="flex items-center justify-center rounded-full w-9 h-9 bg-slate-500"
 									onClick={() => setIsOpen(false)}
 								>
-									<XIcon className="h-[22px] text-white" />
+									<XIcon className="h-5 text-white" />
 								</div>
 							</div>
 							<div className="flex px-4 pt-5 pb-2.5 sm:px-6">
 								<div className="w-full">
 									<div className="text-[#6e767d] flex gap-x-3 relative">
-										<span className="w-0.5 h-full z-[-1] absolute left-5 top-11 bg-gray-600" />
+										<span className="w-[2px] h-full z-[-1] absolute left-5 top-11 bg-gray-100" />
 										<img
 											src={post?.userImg}
-											alt=""
-											className="rounded-full h-11 w-11"
+											alt={post?.username}
+											className="border rounded-full h-11 w-11 bg-slate-200 border-slate-400"
 										/>
 										<div>
-											<div className="inline-block group">
-												<h4 className="font-bold text-[#d9d9d9] inline-block text-[15px] sm:text-base">
-													{post?.username}
-												</h4>
-												<span className="ml-1.5 text-sm sm:text-[15px]">
-													@{post?.tag}{" "}
-												</span>
-											</div>{" "}
-											·{" "}
-											<span className="hover:underline text-sm sm:text-[15px]">
+											<div className="">
+												<h4 className="font-medium">{post?.username}</h4>
+											</div>
+											<span className="block text-xs text-slate-400">
 												<Moment fromNow>{post?.timestamp?.toDate()}</Moment>
 											</span>
-											<p className="text-[#d9d9d9] text-[15px] sm:text-base">
+											<p className="mt-2 text-sm text-slate-500">
 												{post?.text}
 											</p>
 										</div>
 									</div>
 
-									<div className="flex w-full space-x-3 mt-7">
+									<div className="flex w-full pb-4 mt-4 space-x-3">
 										<img
 											src={session.user.image}
 											alt={session.user.name}
-											className="rounded-full h-11 w-11"
+											className="border rounded-full h-11 w-11 bg-slate-200 border-slate-400"
 										/>
-										<div className="flex-grow mt-2">
+										<div className="flex-grow mt-2 overflow-y-scroll scrollbar-hide">
 											<textarea
 												value={comment}
 												onChange={(e) => setComment(e.target.value)}
-												placeholder="Tweet your reply"
+												placeholder="Reply your comment..."
 												rows="2"
-												className="bg-transparent outline-none text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[80px]"
+												className="bg-transparent outline-none w-full resize-none min-h-[80px]"
 											/>
 
-											<div className="flex items-center justify-end pt-2.5">
+											<div className="flex items-center justify-end mt-4">
 												<button
-													className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
+													className="bg-primary text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
 													type="submit"
 													onClick={sendComment}
 													disabled={!comment.trim()}

@@ -7,17 +7,17 @@ import {
 } from "@firebase/firestore";
 import { getProviders, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atom/modalAtom";
 import Modal from "../components/Modal/Modal";
-import Sidebar from "../components/Sidebar/Sidebar";
 import Post from "../components/Post/Post";
 import { db } from "../firebase";
 import { ArrowLeftIcon } from "@heroicons/react/solid";
 import Comment from "../components/Comment/Comment";
 import Head from "next/head";
 import Link from "next/link";
+import Header from "../components/Header/Header";
 
 function PostPage({ providers }) {
 	const { data: session } = useSession();
@@ -35,61 +35,31 @@ function PostPage({ providers }) {
 		[db]
 	);
 
-	useEffect(
-		() =>
-			onSnapshot(
-				query(
-					collection(db, "posts", id, "comments"),
-					orderBy("timestamp", "desc")
-				),
-				(snapshot) => setComments(snapshot.docs)
-			),
-		[db, id]
-	);
-
 	if (!session) return <Login providers={providers} />;
 
 	return (
-		<div>
+		<Fragment>
 			<Head>
 				<title>
-					{post?.username} on Twitter: "{post?.text}"
+					{post?.username} post: "{post?.text}"
 				</title>
 				<link rel="icon" href="/favicon.ico" />
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
 			</Head>
-			<main className="bg-black min-h-screen flex max-w-[1500px] mx-auto">
-				<Sidebar />
-				<div className="flex-grow border-l border-r border-gray-700 max-w-2xl sm:ml-[73px] xl:ml-[370px]">
-					<div className="flex items-center px-1.5 py-2 border-b border-gray-700 text-[#d9d9d9] font-semibold text-xl gap-x-4 sticky top-0 z-50 bg-black">
-						<Link
-							href="/"
-							className="flex items-center justify-center hoverAnimation w-9 h-9 xl:px-0"
-						>
-							<a>
-								<ArrowLeftIcon className="h-5 text-white" />
-							</a>
-						</Link>
-						Tweet
+			<div>
+				{/* Header */}
+				<Header />
+
+				<main className="px-4 py-10">
+					<div className="max-w-2xl mx-auto">
+						<Post id={id} post={post} postPage />
 					</div>
-
-					<Post id={id} post={post} postPage />
-
-					{comments.length > 0 && (
-						<div className="pb-72">
-							{comments.map((comment) => (
-								<Comment
-									key={comment.id}
-									id={comment.id}
-									comment={comment.data()}
-								/>
-							))}
-						</div>
-					)}
-				</div>
+				</main>
 
 				{isOpen && <Modal />}
-			</main>
-		</div>
+			</div>
+		</Fragment>
 	);
 }
 

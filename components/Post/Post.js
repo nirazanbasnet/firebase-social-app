@@ -28,6 +28,7 @@ import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "../../atom/modalAtom";
 import { db } from "../../firebase";
 import Link from "next/link";
+import Comment from "../Comment/Comment";
 
 function Post({ id, post, postPage }) {
 	const { data: session } = useSession();
@@ -44,7 +45,7 @@ function Post({ id, post, postPage }) {
 			onSnapshot(
 				query(
 					collection(db, "posts", id, "comments"),
-					orderBy("timestamp", "desc")
+					orderBy("timestamp", "asc")
 				),
 				(snapshot) => setComments(snapshot.docs)
 			),
@@ -79,117 +80,82 @@ function Post({ id, post, postPage }) {
 	};
 
 	return (
-		<div className="flex p-3 border-b border-gray-700">
-			{!postPage && (
+		<div className="relative p-4 rounded-md shadow shadow-slate-300">
+			<div className="flex items-center">
 				<img
 					src={post?.userImg}
 					alt=""
-					className="mr-4 rounded-full h-11 w-11"
+					className="w-12 h-12 mr-4 rounded-full bg-slate-200"
 				/>
-			)}
 
-			<div className="flex flex-col w-full space-y-2">
-				<div className={`flex ${!postPage && "justify-between"}`}>
-					{postPage && (
-						<img
-							src={post?.userImg}
-							alt="Profile Pic"
-							className="mr-4 rounded-full h-11 w-11"
-						/>
-					)}
-					<div className="text-[#6e767d]">
-						<div className="inline-block group">
-							<h4
-								className={`font-bold text-[15px] sm:text-base text-[#d9d9d9] group-hover:underline ${
-									!postPage && "inline-block"
-								}`}
-							>
-								<Link href={`/${id}`}>
-									<a>{post?.username}</a>
-								</Link>
-							</h4>
-							<span
-								className={`text-sm sm:text-[15px] ${!postPage && "ml-1.5"}`}
-							>
-								@{post?.tag}
-							</span>
-						</div>
-						·{" "}
-						<span className="hover:underline text-sm sm:text-[15px]">
-							<Moment fromNow>{post?.timestamp?.toDate()}</Moment>
-						</span>
-						{!postPage && (
-							<p className="text-[#d9d9d9] text-[15px] sm:text-base mt-0.5">
-								{post?.text}
-							</p>
-						)}
-					</div>
-					<div className="flex-shrink-0 ml-auto icon group">
-						<DotsHorizontalIcon className="h-5 text-[#6e767d] group-hover:text-[#1d9bf0]" />
+				<div className="leading-tight">
+					<h4 className="font-medium">
+						<Link href={`/${id}`}>
+							<a>{post?.username}</a>
+						</Link>
+					</h4>
+					<span className="text-xs text-slate-400">
+						<Moment fromNow>{post?.timestamp?.toDate()}</Moment>
+					</span>
+				</div>
+			</div>
+
+			{session.user.uid === post?.id ? (
+				<div
+					className="absolute flex items-center p-2 text-sm rounded-md cursor-pointer right-4 top-3 group hover:bg-slate-100"
+					onClick={(e) => {
+						e.stopPropagation();
+						alert("Delete the post");
+						deleteDoc(doc(db, "posts", id));
+						router.push("/");
+					}}
+				>
+					<div className="flex items-center space-x-2">
+						<TrashIcon className="h-5 group-hover:text-red-600" />
+						<span>Delete</span>
 					</div>
 				</div>
+			) : (
+				""
+			)}
 
-				{postPage && (
-					<p className="text-[#d9d9d9] mt-0.5 text-xl">{post?.text}</p>
+			<div className="-mx-4">
+				<p className="px-4 mt-4">{post?.text}</p>
+
+				{post?.image ? (
+					<img
+						src={post?.image}
+						alt={post?.text}
+						className="object-cover w-full mt-4 max-h-[500px] bg-slate-200"
+					/>
+				) : (
+					""
 				)}
+			</div>
 
-				<img
-					src={post?.image}
-					alt=""
-					className="rounded-2xl max-h-[700px] object-cover mr-2"
-				/>
-				<div
-					className={`text-[#6e767d] flex justify-between w-10/12 ${
-						postPage && "mx-auto"
-					}`}
-				>
+			<div className="flex items-center justify-between mt-4">
+				<div className="flex items-center space-x-1">
 					<div
-						className="flex items-center space-x-1 group"
+						className="flex items-center p-2 text-sm rounded-md cursor-pointer group hover:bg-slate-100"
 						onClick={(e) => {
 							e.stopPropagation();
 							setPostId(id);
 							setIsOpen(true);
 						}}
 					>
-						<div className="icon group-hover:bg-[#1d9bf0] group-hover:bg-opacity-10">
-							<ChatIcon className="h-5 group-hover:text-[#1d9bf0]" />
+						<div className="flex items-center space-x-2">
+							<ChatIcon className="h-5 " />
 						</div>
-						{comments.length > 0 && (
-							<span className="group-hover:text-[#1d9bf0] text-sm">
-								{comments.length}
-							</span>
-						)}
 					</div>
 
-					{session.user.uid === post?.id ? (
-						<div
-							className="flex items-center space-x-1 group"
-							onClick={(e) => {
-								e.stopPropagation();
-								deleteDoc(doc(db, "posts", id));
-								router.push("/");
-							}}
-						>
-							<div className="icon group-hover:bg-red-600/10">
-								<TrashIcon className="h-5 group-hover:text-red-600" />
-							</div>
-						</div>
-					) : (
-						<div className="flex items-center space-x-1 group">
-							<div className="icon group-hover:bg-green-500/10">
-								<SwitchHorizontalIcon className="h-5 group-hover:text-green-500" />
-							</div>
-						</div>
-					)}
-
 					<div
-						className="flex items-center space-x-1 group"
+						className="flex items-center p-2 text-sm rounded-md cursor-pointer group hover:bg-slate-100"
 						onClick={(e) => {
 							e.stopPropagation();
 							likePost();
 						}}
 					>
-						<div className="icon group-hover:bg-pink-600/10">
+						<div className="flex items-center">
 							{liked ? (
 								<HeartIconFilled className="h-5 text-pink-600" />
 							) : (
@@ -198,7 +164,7 @@ function Post({ id, post, postPage }) {
 						</div>
 						{likes.length > 0 && (
 							<span
-								className={`group-hover:text-pink-600 text-sm ${
+								className={`group-hover:text-pink-600 text-sm ml-1 ${
 									liked && "text-pink-600"
 								}`}
 							>
@@ -206,15 +172,24 @@ function Post({ id, post, postPage }) {
 							</span>
 						)}
 					</div>
-
-					<div className="icon group">
-						<ShareIcon className="h-5 group-hover:text-[#1d9bf0]" />
-					</div>
-					<div className="icon group">
-						<ChartBarIcon className="h-5 group-hover:text-[#1d9bf0]" />
-					</div>
 				</div>
+
+				{comments.length > 0 && (
+					<span className="text-sm">{comments.length} Comments</span>
+				)}
 			</div>
+
+			{comments.length > 0 && (
+				<div className="px-4 pt-6 mt-4 -mx-4 space-y-4 border-t border-gray-100">
+					{comments.map((comment) => (
+						<Comment
+							key={comment.id}
+							id={comment.id}
+							comment={comment.data()}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

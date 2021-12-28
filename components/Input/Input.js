@@ -27,6 +27,7 @@ function Input() {
 	const filePickerRef = useRef(null);
 	const [showEmojis, setShowEmojis] = useState(false);
 
+	// Send post to firestore
 	const sendPost = async () => {
 		if (loading) return;
 		setLoading(true);
@@ -57,6 +58,7 @@ function Input() {
 		setShowEmojis(false);
 	};
 
+	// Add Image to post
 	const addImageToPost = (e) => {
 		const reader = new FileReader();
 		if (e.target.files[0]) {
@@ -68,6 +70,7 @@ function Input() {
 		};
 	};
 
+	// Add emoji to textarea
 	const addEmoji = (e) => {
 		let sym = e.unified.split("-");
 		let codesArray = [];
@@ -78,94 +81,99 @@ function Input() {
 
 	return (
 		<div
-			className={`border-b border-gray-700 p-3 flex space-x-3 overflow-y-scroll scrollbar-hide ${
+			className={`shadow shadow-slate-300 p-4 rounded-md ${
 				loading && "opacity-60"
 			}`}
 		>
-			<img
-				src={session.user.image}
-				alt=""
-				className="rounded-full cursor-pointer h-11 w-11"
-				onClick={signOut}
-			/>
-			<div className="w-full divide-y divide-gray-700">
-				<div className={`${selectedFile && "pb-7"} ${input && "space-y-2.5"}`}>
+			<div className="flex mb-4">
+				<img
+					src={session.user.image}
+					alt={session.user.name}
+					className="w-12 h-12 mr-3 rounded-full cursor-pointer bg-slate-200"
+					onClick={signOut}
+				/>
+
+				<div className="relative flex-grow">
 					<textarea
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
-						placeholder="What's happening?"
+						placeholder={`What's Your Mind ? ${session.user.name}`}
 						rows="2"
-						className="bg-transparent outline-none text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[50px]"
+						className="w-full h-12 px-6 py-3 pr-20 rounded-full outline-none resize-none placeholder-slate-500 bg-slate-100"
 					/>
 
-					{selectedFile && (
-						<div className="relative">
-							<div
-								className="absolute w-8 h-8 bg-[#15181c] hover:bg-[#272c26] bg-opacity-75 rounded-full flex items-center justify-center top-1 left-1 cursor-pointer"
-								onClick={() => setSelectedFile(null)}
-							>
-								<XIcon className="h-5 text-white" />
+					{!loading && (
+						<div className="absolute flex items-center justify-between top-1.5 right-3">
+							<div className="flex items-center space-x-1">
+								<div
+									className="icon"
+									onClick={() => filePickerRef.current.click()}
+								>
+									<PhotographIcon className="h-6 text-green-500" />
+									<input
+										type="file"
+										ref={filePickerRef}
+										hidden
+										accept="image/png, image/gif, image/jpeg"
+										onChange={addImageToPost}
+									/>
+								</div>
+
+								<div
+									className="icon"
+									onClick={() => setShowEmojis(!showEmojis)}
+								>
+									<EmojiHappyIcon className="h-6 text-yellow-400" />
+								</div>
+
+								{showEmojis && (
+									<Picker
+										onSelect={addEmoji}
+										style={{
+											position: "absolute",
+											marginTop: "465px",
+											marginLeft: -40,
+											maxWidth: "320px",
+											borderRadius: "20px",
+											zIndex: 999,
+										}}
+										theme="dark"
+									/>
+								)}
 							</div>
-							<img
-								src={selectedFile}
-								alt=""
-								className="object-contain rounded-2xl max-h-80"
-							/>
 						</div>
 					)}
 				</div>
-				{!loading && (
-					<div className="flex items-center justify-between pt-2.5">
-						<div className="flex items-center">
-							<div
-								className="icon"
-								onClick={() => filePickerRef.current.click()}
-							>
-								<PhotographIcon className="text-[#1d9bf0] h-[22px]" />
-								<input
-									type="file"
-									ref={filePickerRef}
-									hidden
-									onChange={addImageToPost}
-								/>
-							</div>
-
-							<div className="rotate-90 icon">
-								<ChartBarIcon className="text-[#1d9bf0] h-[22px]" />
-							</div>
-
-							<div className="icon" onClick={() => setShowEmojis(!showEmojis)}>
-								<EmojiHappyIcon className="text-[#1d9bf0] h-[22px]" />
-							</div>
-
-							<div className="icon">
-								<CalendarIcon className="text-[#1d9bf0] h-[22px]" />
-							</div>
-
-							{showEmojis && (
-								<Picker
-									onSelect={addEmoji}
-									style={{
-										position: "absolute",
-										marginTop: "465px",
-										marginLeft: -40,
-										maxWidth: "320px",
-										borderRadius: "20px",
-									}}
-									theme="dark"
-								/>
-							)}
-						</div>
-						<button
-							className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
-							disabled={!input && !selectedFile}
-							onClick={sendPost}
-						>
-							Tweet
-						</button>
-					</div>
-				)}
 			</div>
+
+			{selectedFile && (
+				<div className="relative my-4 rounded-md bg-slate-300">
+					<div
+						className="absolute flex items-center justify-center w-8 h-8 transition duration-75 bg-opacity-75 rounded-full cursor-pointer bg-slate-600 hover:bg-red-600 top-1 right-1"
+						onClick={() => setSelectedFile(null)}
+						title="Delete the photo"
+					>
+						<XIcon className="h-5 text-white" />
+					</div>
+					<img
+						src={selectedFile}
+						alt=""
+						className="object-cover w-full rounded-md"
+					/>
+				</div>
+			)}
+
+			{!loading && (
+				<div className="flex items-center justify-end">
+					<button
+						className="bg-primary text-white rounded-full px-6 py-1 font-medium text-lg shadow-md hover:bg-[#4a30cb] disabled:opacity-30 disabled:cursor-not-allowed"
+						disabled={!input && !selectedFile}
+						onClick={sendPost}
+					>
+						Share
+					</button>
+				</div>
+			)}
 		</div>
 	);
 }

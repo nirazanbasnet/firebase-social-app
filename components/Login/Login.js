@@ -1,33 +1,45 @@
 import { signIn } from "next-auth/react";
-import Image from "next/image";
 
 function Login({ providers }) {
 	return (
-		<div className="flex flex-col items-center pt-48 space-y-20">
-			<Image
-				src="https://rb.gy/ogau5a"
-				width={150}
-				height={150}
-				objectFit="contain"
-			/>
+		<section className="relative grid min-h-screen place-content-center">
+			<div className="absolute inset-0">
+				<img
+					src="/img/bg-hero.jpeg"
+					className="object-cover w-full h-full"
+					alt="..."
+				/>
+			</div>
+			<div className="relative p-10 mx-auto bg-white rounded-md shadow-sm max-h-80 w-[320px]">
+				<h2 className="mb-20 text-2xl font-medium">
+					Sign Into <br />
+					Your Account
+				</h2>
 
-			<div>
 				{Object.values(providers).map((provider) => (
 					<div key={provider.name}>
-						{/* https://devdojo.com/tailwindcss/buttons#_ */}
 						<button
-							className="relative inline-flex items-center justify-start px-6 py-3 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group"
 							onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+							className="relative w-full px-5 py-3 overflow-hidden font-medium bg-gray-100 border border-gray-100 rounded-lg text-slate-600 group"
 						>
-							<span className="w-48 h-48 rounded rotate-[-40deg] bg-[#1d9bf0] absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
-							<span className="relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white">
-								Sign in with {provider.name}
+							<span className="absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-gray-600 group-hover:w-full ease"></span>
+							<span className="absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-gray-600 group-hover:w-full ease"></span>
+							<span className="absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+							<span className="absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+							<span className="absolute inset-0 w-full h-full duration-300 delay-300 bg-gray-900 opacity-0 group-hover:opacity-100"></span>
+							<span className="relative flex items-center justify-center transition-colors duration-300 delay-200 group-hover:text-white ease">
+								<img
+									className="h-10 p-2 mr-2 bg-white rounded-md"
+									src="/img/google-logo.png"
+									alt="..."
+								/>{" "}
+								<span className="font-medium ">{provider.name} Sign in</span>
 							</span>
 						</button>
 					</div>
 				))}
 			</div>
-		</div>
+		</section>
 	);
 }
 

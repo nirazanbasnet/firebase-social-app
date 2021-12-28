@@ -1,52 +1,49 @@
 import Head from "next/head";
 import { getProviders, getSession, useSession } from "next-auth/react";
 import Feed from "../components/Feed/Feed";
-import Sidebar from "../components/Sidebar/Sidebar";
+import Header from "../components/Header/Header";
 import Login from "../components/Login/Login";
 import Modal from "../components/Modal/Modal";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atom/modalAtom";
+import { Fragment } from "react";
 
-export default function Home({ trendingResults, followResults, providers }) {
+export default function Home({ providers }) {
 	const { data: session } = useSession();
 	const [isOpen, setIsOpen] = useRecoilState(modalState);
 
 	if (!session) return <Login providers={providers} />;
 
 	return (
-		<main>
+		<Fragment>
 			<Head>
 				<title>Social App</title>
 				<link rel="icon" href="/favicon.ico" />
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
 			</Head>
 
-			<div className="flex min-h-screen bg-black">
-				{/* Sidebar */}
-				<Sidebar />
+			<div>
+				{/* Header */}
+				<Header />
 
-				{/* Feed */}
-				<Feed />
+				<main className="px-4 py-10">
+					{/* Feed */}
+					<Feed />
+				</main>
 
 				{isOpen && <Modal />}
 			</div>
-		</main>
+		</Fragment>
 	);
 }
 
 export async function getServerSideProps(context) {
-	const trendingResults = await fetch("https://jsonkeeper.com/b/NKEV").then(
-		(res) => res.json()
-	);
-	const followResults = await fetch("https://jsonkeeper.com/b/WWMJ").then(
-		(res) => res.json()
-	);
 	const providers = await getProviders();
 	const session = await getSession(context);
 
 	return {
 		props: {
-			trendingResults,
-			followResults,
 			providers,
 			session,
 		},

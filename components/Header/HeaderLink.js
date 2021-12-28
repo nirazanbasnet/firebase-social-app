@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 
-function SidebarLink({ Icon, text, active }) {
+function HeaderLink({ Icon, text, active }) {
 	const router = useRouter();
 	return (
 		<div
-			className={`text-[#d9d9d9] flex items-center justify-center xl:justify-start text-xl space-x-3 hoverAnimation ${
+			className={`flex text-white items-center text-lg space-x-2 ${
 				active && "font-bold"
 			}`}
 			onClick={() => active && router.push("/")}
@@ -15,4 +15,4 @@ function SidebarLink({ Icon, text, active }) {
 	);
 }
 
-export default SidebarLink;
+export default HeaderLink;
