@@ -7,30 +7,23 @@ import {
 	query,
 	setDoc,
 } from "@firebase/firestore";
-import {
-	ChartBarIcon,
-	ChatIcon,
-	DotsHorizontalIcon,
-	HeartIcon,
-	ShareIcon,
-	SwitchHorizontalIcon,
-	TrashIcon,
-} from "@heroicons/react/outline";
+import { ChatIcon, HeartIcon, TrashIcon } from "@heroicons/react/outline";
 import {
 	HeartIcon as HeartIconFilled,
 	ChatIcon as ChatIconFilled,
 } from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Moment from "react-moment";
 import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "../../atom/modalAtom";
 import { db } from "../../firebase";
 import Link from "next/link";
 import Comment from "../Comment/Comment";
+import ProfilePicture from "../ProfilePicture/ProfilePicture";
 
-function Post({ id, post, postPage }) {
+function Post({ id, post }) {
 	const { data: session } = useSession();
 	const [isOpen, setIsOpen] = useRecoilState(modalState);
 	const [postId, setPostId] = useRecoilState(postIdState);
@@ -87,6 +80,7 @@ function Post({ id, post, postPage }) {
 					alt=""
 					className="w-12 h-12 mr-4 rounded-full bg-slate-200"
 				/>
+				{/* <ProfilePicture userId={post?.id} selectedFile={post?.userImg} /> */}
 
 				<div className="leading-tight">
 					<h4 className="font-medium">
@@ -123,11 +117,20 @@ function Post({ id, post, postPage }) {
 				<p className="px-4 mt-4">{post?.text}</p>
 
 				{post?.image ? (
-					<img
-						src={post?.image}
-						alt={post?.text}
-						className="object-cover w-full mt-4 max-h-[500px] bg-slate-200"
-					/>
+					<Fragment>
+						{post?.type === "video" ? (
+							<video className="w-full mt-4 bg-slate-200" controls>
+								<source src={post?.image} type="video/mp4" />
+								Your browser does not support the video tag.
+							</video>
+						) : (
+							<img
+								src={post?.image}
+								alt={post?.text}
+								className="object-cover w-full mt-4 max-h-[500px] bg-slate-200"
+							/>
+						)}
+					</Fragment>
 				) : (
 					""
 				)}

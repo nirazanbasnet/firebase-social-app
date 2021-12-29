@@ -80,7 +80,7 @@ function Modal() {
 						<div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white shadow-xl rounded-2xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
 							<div className="flex items-center justify-end p-4 border-b border-slate-100">
 								<div
-									className="flex items-center justify-center rounded-full w-9 h-9 bg-slate-500"
+									className="flex items-center justify-center rounded-full cursor-pointer w-9 h-9 bg-slate-500"
 									onClick={() => setIsOpen(false)}
 								>
 									<XIcon className="h-5 text-white" />
@@ -125,12 +125,12 @@ function Modal() {
 
 											<div className="flex items-center justify-end mt-4">
 												<button
-													className="bg-primary text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
+													className="bg-primary text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#4a30cb] disabled:opacity-30 disabled:cursor-not-allowed"
 													type="submit"
 													onClick={sendComment}
 													disabled={!comment.trim()}
 												>
-													Reply
+													Comment
 												</button>
 											</div>
 										</div>

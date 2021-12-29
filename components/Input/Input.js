@@ -24,6 +24,7 @@ function Input() {
 	const [input, setInput] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [selectedFile, setSelectedFile] = useState(null);
+	const [selectedFileType, setSelectedFileType] = useState(null);
 	const filePickerRef = useRef(null);
 	const [showEmojis, setShowEmojis] = useState(false);
 
@@ -36,7 +37,7 @@ function Input() {
 			id: session.user.uid,
 			username: session.user.name,
 			userImg: session.user.image,
-			tag: session.user.tag,
+			tag: session.user.tag,  
 			text: input,
 			timestamp: serverTimestamp(),
 		});
@@ -44,10 +45,12 @@ function Input() {
 		const imageRef = ref(storage, `posts/${docRef.id}/image`);
 
 		if (selectedFile) {
+			console.log(selectedFile);
 			await uploadString(imageRef, selectedFile, "data_url").then(async () => {
 				const downloadURL = await getDownloadURL(imageRef);
 				await updateDoc(doc(db, "posts", docRef.id), {
 					image: downloadURL,
+					type: selectedFileType,
 				});
 			});
 		}
@@ -55,6 +58,7 @@ function Input() {
 		setLoading(false);
 		setInput("");
 		setSelectedFile(null);
+		setSelectedFileType(null);
 		setShowEmojis(false);
 	};
 
@@ -66,7 +70,20 @@ function Input() {
 		}
 
 		reader.onload = (readerEvent) => {
+			console.log(e.target.files[0]);
+			const type = e.target.files[0].type.startsWith("image")
+				? "image"
+				: e.target.files[0].type.startsWith("video")
+				? "video"
+				: "";
+
+			if (!type) {
+				alert("Only supports Image or Video type");
+				return;
+			}
+
 			setSelectedFile(readerEvent.target.result);
+			setSelectedFileType(type);
 		};
 	};
 
@@ -90,20 +107,21 @@ function Input() {
 					src={session.user.image}
 					alt={session.user.name}
 					className="w-12 h-12 mr-3 rounded-full cursor-pointer bg-slate-200"
-					onClick={signOut}
 				/>
 
 				<div className="relative flex-grow">
-					<textarea
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						placeholder={`What's Your Mind ? ${session.user.name}`}
-						rows="2"
-						className="w-full h-12 px-6 py-3 pr-20 rounded-full outline-none resize-none placeholder-slate-500 bg-slate-100"
-					/>
+					<div className="overflow-y-scroll scrollbar-hide">
+						<textarea
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							placeholder={`What's Your Mind ? ${session.user.name}`}
+							rows="2"
+							className="w-full h-12 px-3 py-3 text-sm rounded-full outline-none resize-none xl:px-6 xl:pr-20 placeholder-slate-500 bg-slate-100"
+						/>
+					</div>
 
 					{!loading && (
-						<div className="absolute flex items-center justify-between top-1.5 right-3">
+						<div className="xl:absolute flex items-center justify-between top-1.5 right-3">
 							<div className="flex items-center space-x-1">
 								<div
 									className="icon"
@@ -114,7 +132,7 @@ function Input() {
 										type="file"
 										ref={filePickerRef}
 										hidden
-										accept="image/png, image/gif, image/jpeg"
+										// accept="image/png, image/gif, image/jpeg"
 										onChange={addImageToPost}
 									/>
 								</div>
@@ -155,11 +173,18 @@ function Input() {
 					>
 						<XIcon className="h-5 text-white" />
 					</div>
-					<img
-						src={selectedFile}
-						alt=""
-						className="object-cover w-full rounded-md"
-					/>
+					{selectedFileType === "image" ? (
+						<img
+							src={selectedFile}
+							alt=""
+							className="object-cover w-full rounded-md"
+						/>
+					) : (
+						<video className="w-full" controls>
+							<source src={selectedFile} type="video/mp4" />
+							Your browser does not support the video tag.
+						</video>
+					)}
 				</div>
 			)}
 
@@ -167,7 +192,7 @@ function Input() {
 				<div className="flex items-center justify-end">
 					<button
 						className="bg-primary text-white rounded-full px-6 py-1 font-medium text-lg shadow-md hover:bg-[#4a30cb] disabled:opacity-30 disabled:cursor-not-allowed"
-						disabled={!input && !selectedFile}
+						disabled={!input.trim() && !selectedFile}
 						onClick={sendPost}
 					>
 						Share

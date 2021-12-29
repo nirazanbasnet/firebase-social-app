@@ -1,31 +1,36 @@
-import Image from "next/image";
-import { HashtagIcon, RssIcon, LogoutIcon } from "@heroicons/react/outline";
+import { LogoutIcon } from "@heroicons/react/outline";
 import { HomeIcon } from "@heroicons/react/solid";
-import HeaderLink from "./HeaderLink";
 import { signOut, useSession } from "next-auth/react";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react/cjs/react.production.min";
 import Link from "next/link";
+import ProfileInput from "../ProfileInput/ProfileInput";
+import ProfilePicture from "../ProfilePicture/ProfilePicture";
 
 function Header() {
 	const { data: session } = useSession();
+	console.log(session);
 	return (
-		<header className="flex items-center justify-between px-10 py-4 bg-primary">
+		<header className="flex items-center justify-between px-4 py-4 xl:px-10 bg-primary">
 			<div className="flex items-center space-x-4">
 				<Link href="/">
-					<a>
-						<HeaderLink text="Home" Icon={HomeIcon} />
+					<a className="flex items-center text-xl text-white">
+						<HomeIcon className="mr-3 h-7" />
+						<span>Home</span>
 					</a>
 				</Link>
-				<HeaderLink text="Explore" Icon={HashtagIcon} />
 			</div>
+
+			{/* TODO:For Profile upload */}
+			{/* <ProfileInput /> */}
+			{/* <ProfilePicture userId={session.user.uid} /> */}
 			<Menu as="div" className="relative">
 				<Menu.Button>
 					<div className="flex items-center text-left text-white cursor-pointer">
 						<img
 							src={session.user.image}
 							alt={session.user.name}
-							className="inline-block w-10 h-10 border border-gray-200 rounded-full shadow-md xl:mr-3"
+							className="inline-block w-10 h-10 mr-2 border border-gray-200 rounded-full shadow-md xl:mr-3"
 						/>
 						<div className="leading-tight">
 							<h4 className="font-medium">{session.user.name}</h4>
