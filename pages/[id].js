@@ -1,25 +1,18 @@
-import {
-	collection,
-	doc,
-	onSnapshot,
-	orderBy,
-	query,
-} from "@firebase/firestore";
+import { doc, onSnapshot } from "@firebase/firestore";
 import { getProviders, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atom/modalAtom";
-import Modal from "../components/Modal/Modal";
-import Post from "../components/Post/Post";
 import { db } from "../firebase";
-import { ArrowLeftIcon } from "@heroicons/react/solid";
-import Comment from "../components/Comment/Comment";
-import Head from "next/head";
+import Modal from "../components/ui/Modal";
+import Post from "../components/ui/Post";
+import AppLayout from "../components/layouts/AppLayout";
+import AppContent from "../components/layouts/AppContent";
+import { ArrowLeftIcon } from "@heroicons/react/outline";
 import Link from "next/link";
-import Header from "../components/Header/Header";
 
-function PostPage({ providers }) {
+function PostDetail({ providers }) {
 	const { data: session } = useSession();
 	const [isOpen, setIsOpen] = useRecoilState(modalState);
 	const [post, setPost] = useState();
@@ -38,47 +31,33 @@ function PostPage({ providers }) {
 	if (!session) return <Login providers={providers} />;
 
 	return (
-		<Fragment>
-			<Head>
-				<title>
-					{post?.username} post: "{post?.text}"
-				</title>
-				<link rel="icon" href="/favicon.ico" />
-				<link rel="preconnect" href="https://fonts.googleapis.com" />
-				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
-			</Head>
-			<div>
-				{/* Header */}
-				<Header />
-
-				<main className="px-4 py-10">
+		<AppLayout title={`${post?.username} posted: ${post?.text}`}>
+			<AppContent>
+				<div className="px-4 py-10">
 					<div className="max-w-2xl mx-auto">
+						<Link href="/">
+							<a className="flex items-center mb-4 space-x-3 hover:text-primary">
+								<ArrowLeftIcon className="h-5" />
+								<span>Back</span>
+							</a>
+						</Link>
 						<Post id={id} post={post} postPage />
 					</div>
-				</main>
-
+				</div>
 				{isOpen && <Modal />}
-			</div>
-		</Fragment>
+			</AppContent>
+		</AppLayout>
 	);
 }
 
-export default PostPage;
+export default PostDetail;
 
 export async function getServerSideProps(context) {
-	const trendingResults = await fetch("https://jsonkeeper.com/b/NKEV").then(
-		(res) => res.json()
-	);
-	const followResults = await fetch("https://jsonkeeper.com/b/WWMJ").then(
-		(res) => res.json()
-	);
 	const providers = await getProviders();
 	const session = await getSession(context);
 
 	return {
 		props: {
-			trendingResults,
-			followResults,
 			providers,
 			session,
 		},

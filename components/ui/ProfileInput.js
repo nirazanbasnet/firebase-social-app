@@ -3,7 +3,7 @@ import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { useSession } from "next-auth/react";
 import React, { useRef, useState } from "react";
 import { db, storage } from "../../firebase";
-import ProfilePicture from "../ProfilePicture/ProfilePicture";
+import ProfilePicture from "./ProfilePicture";
 
 function ProfileInput() {
 	const { data: session } = useSession();

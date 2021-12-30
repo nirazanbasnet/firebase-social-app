@@ -1,9 +1,8 @@
-import { SparklesIcon } from "@heroicons/react/outline";
 import { useEffect, useState } from "react";
-import Input from "../Input/Input";
 import { onSnapshot, collection, query, orderBy } from "@firebase/firestore";
 import { db } from "../../firebase";
-import Post from "../Post/Post";
+import Post from "../ui/Post";
+import PostInput from "../ui/PostInput";
 
 function Feed() {
 	const [posts, setPosts] = useState([]);
@@ -22,9 +21,10 @@ function Feed() {
 
 	return (
 		<div className="max-w-2xl mx-auto">
-			{/* Input */}
-			<Input />
+			{/* Post Input */}
+			<PostInput />
 
+			{/* List of Posts */}
 			<div className="mt-10 space-y-6">
 				{posts.map((post) => (
 					<Post key={post.id} id={post.id} post={post.data()} />

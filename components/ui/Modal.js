@@ -11,13 +11,7 @@ import {
 } from "@firebase/firestore";
 import { db } from "../../firebase";
 import { useSession } from "next-auth/react";
-import {
-	CalendarIcon,
-	ChartBarIcon,
-	EmojiHappyIcon,
-	PhotographIcon,
-	XIcon,
-} from "@heroicons/react/outline";
+import { XIcon } from "@heroicons/react/outline";
 import { useRouter } from "next/router";
 import Moment from "react-moment";
 

@@ -19,7 +19,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
 
-function Input() {
+function PostInput() {
 	const { data: session } = useSession();
 	const [input, setInput] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -37,7 +37,7 @@ function Input() {
 			id: session.user.uid,
 			username: session.user.name,
 			userImg: session.user.image,
-			tag: session.user.tag,  
+			tag: session.user.tag,
 			text: input,
 			timestamp: serverTimestamp(),
 		});
@@ -106,7 +106,7 @@ function Input() {
 				<img
 					src={session.user.image}
 					alt={session.user.name}
-					className="w-12 h-12 mr-3 rounded-full cursor-pointer bg-slate-200"
+					className="w-12 h-12 mr-3 rounded-full bg-slate-200"
 				/>
 
 				<div className="relative flex-grow">
@@ -203,4 +203,4 @@ function Input() {
 	);
 }
 
-export default Input;
+export default PostInput;

@@ -20,8 +20,8 @@ import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "../../atom/modalAtom";
 import { db } from "../../firebase";
 import Link from "next/link";
-import Comment from "../Comment/Comment";
-import ProfilePicture from "../ProfilePicture/ProfilePicture";
+import Comment from "./Comment";
+import ProfilePicture from "./ProfilePicture";
 
 function Post({ id, post }) {
 	const { data: session } = useSession();
@@ -73,19 +73,23 @@ function Post({ id, post }) {
 	};
 
 	return (
-		<div className="relative p-4 rounded-md shadow shadow-slate-300">
+		<div className="relative p-4 transition duration-75 rounded-md shadow shadow-slate-300 hover:shadow-lg">
 			<div className="flex items-center">
-				<img
-					src={post?.userImg}
-					alt=""
-					className="w-12 h-12 mr-4 rounded-full bg-slate-200"
-				/>
+				<Link href={`/${id}`}>
+					<a>
+						<img
+							src={post?.userImg}
+							alt="..."
+							className="w-12 h-12 mr-4 rounded-full bg-slate-200"
+						/>
+					</a>
+				</Link>
+				{/* TODO */}
 				{/* <ProfilePicture userId={post?.id} selectedFile={post?.userImg} /> */}
-
 				<div className="leading-tight">
 					<h4 className="font-medium">
 						<Link href={`/${id}`}>
-							<a>{post?.username}</a>
+							<a className="hover:text-primary">{post?.username}</a>
 						</Link>
 					</h4>
 					<span className="text-xs text-slate-400">
@@ -104,8 +108,8 @@ function Post({ id, post }) {
 						router.push("/");
 					}}
 				>
-					<div className="flex items-center space-x-2">
-						<TrashIcon className="h-5 group-hover:text-red-600" />
+					<div className="flex items-center space-x-2 group-hover:text-red-600">
+						<TrashIcon className="h-5" />
 						<span>Delete</span>
 					</div>
 				</div>
@@ -146,7 +150,7 @@ function Post({ id, post }) {
 							setIsOpen(true);
 						}}
 					>
-						<div className="flex items-center space-x-2">
+						<div className="flex items-center space-x-2 group-hover:text-primary">
 							<ChatIcon className="h-5 " />
 						</div>
 					</div>
